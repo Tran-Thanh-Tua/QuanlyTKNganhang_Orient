@@ -23,7 +23,6 @@ double NhapSoTien(const string& thongBao) {
         cout << R << "So tien nhap vao khong hop le!\n" << W;
         return -1;
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     return tien;
 }
 
@@ -38,7 +37,6 @@ int NhapSoNgay() {
         cout << R << "So ngay nhap vao khong hop le!\n" << W;
         return -1;
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     return ngay;
 }
 
@@ -130,8 +128,8 @@ public:
         if (soNgayGui == -1) { PauseIn(); return false; }
         double tienNhan = TinhTienNhan(soNgayGui);
         cout << "\n=> So tien rut: " << fixed << setprecision(0) << tienNhan << " VND ";
-        if (soNgayGui >= 30) cout << G << "(gom ca tien lai 5%)\n" << W;
-        else cout << R << "(Khong co lai: Rut truoc han)\n" << W;
+        if (soNgayGui >= 30) cout << G << "(Gom ca tien lai 5%)\n" << W;
+        else cout << R << "(Khong co lai: rut truoc han)\n" << W;
         cout << "Xac nhan rut toan bo (y/n): ";
         char c; cin >> c; cin.ignore();
         if (c == 'y' || c == 'Y') {
@@ -331,7 +329,6 @@ void ThaoTacTrenTaiKhoan() {
 
 //HAM MAIN
 int main() {
-    cout << fixed << setprecision(0);
     DocTuFile();
     string luaChon;
     do {
@@ -353,7 +350,7 @@ int main() {
         else if (luaChon == "3") ThaoTacTrenTaiKhoan();
         else if (luaChon == "4") { LuuVaoFile(); break; }
         else if (luaChon == "5") { cout << "Thoat khong luu.\n"; break; }
-        else { cout << "Lua chon khong hop le!\n\nNhan Enter de quay lai..."; cin.get(); }
+        else { cout << R << "Lua chon khong hop le!\n" << W << "\nNhan Enter de quay lai..."; cin.get(); }
     } while (true);
 
     for (auto tk : dsTaiKhoan) delete tk;
