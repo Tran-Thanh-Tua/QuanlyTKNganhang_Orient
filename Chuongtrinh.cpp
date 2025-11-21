@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iomanip>
 #include <limits>
-
 using namespace std;
 
 //DINH DANG MAU SAC
@@ -18,7 +17,7 @@ double NhapSoTien(const string& thongBao) {
     double tien;
     cout << thongBao;
     cin >> tien;
-    if (cin.fail() || tien < 0) { //so tien phai la so thuc khong am
+    if (cin.fail() || tien < 0) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << R << "So tien nhap vao khong hop le!\n" << W;
@@ -33,7 +32,7 @@ int NhapSoNgay() {
     int ngay;
     cout << "\nNhap so ngay da gui den hien tai: ";
     cin >> ngay;
-    if (cin.fail() || ngay < 0) { //so ngay phai la so nguyen khong am
+    if (cin.fail() || ngay < 0) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << R << "So ngay nhap vao khong hop le!\n" << W;
@@ -61,11 +60,21 @@ protected:
     string chuTK;
     double soDu;
 public:
-    TaiKhoan(string stk = "", string ctk = "", double sodu = 0)
+    TaiKhoan() : soTK(""), chuTK(""), soDu(0) {}
+    TaiKhoan(string stk, string ctk, double sodu = 0)
         : soTK(stk), chuTK(ctk), soDu(sodu) {}
+
+    string getSoTK() const { return soTK; }
+    string getChuTK() const { return chuTK; }
+    double getSoDu() const { return soDu; }
+    void setSoTK(const string& stk) { soTK = stk; }
+    void setChuTK(const string& ctk) { chuTK = ctk; }
+    void setSoDu(double sodu) { if (sodu >= 0) soDu = sodu; }
+
     virtual void NapTien(double tien) {
         if (tien > 0) soDu += tien;
     }
+
     virtual bool RutTien(double tien) {
         if (tien <= soDu) {
             soDu -= tien;
@@ -73,14 +82,28 @@ public:
         }
         return false;
     }
-    virtual void HienThiThongTin() const {
-        cout << "So TK: " << soTK << "\n"
-            << "Chu TK: " << chuTK << "\n"
-            << "So du: " << fixed << setprecision(0) << soDu << " VND\n";
+
+    friend istream& operator>>(istream& is, TaiKhoan& tk) {
+        cout << "Nhap so tai khoan: ";
+        getline(is >> ws, tk.soTK);
+        cout << "Nhap ten chu tai khoan: ";
+        getline(is, tk.chuTK);
+        tk.soDu = NhapSoTien("Nhap so du: ");
+        if (tk.soDu == -1) tk.soDu = 0;
+        return is;
     }
-    string getSoTK() const { return soTK; }
-    string getChuTK() const { return chuTK; }
-    double getSoDu() const { return soDu; }
+
+    friend ostream& operator<<(ostream& os, const TaiKhoan& tk) {
+        os << "So TK: " << tk.soTK << "\n"
+            << "Chu TK: " << tk.chuTK << "\n"
+            << "So du: " << fixed << setprecision(0) << tk.soDu << " VND\n";
+        return os;
+    }
+
+    virtual void HienThiThongTin() const {
+        cout << *this << endl;
+    }
+
     virtual ~TaiKhoan() {}
 };
 
@@ -89,7 +112,8 @@ class TaiKhoanTietKiem : public TaiKhoan {
 private:
     const double laiSuatThang = 0.05;
 public:
-    TaiKhoanTietKiem(string stk = "", string ctk = "", double tienGui = 0)
+    TaiKhoanTietKiem() : TaiKhoan() {}
+    TaiKhoanTietKiem(string stk, string ctk, double tienGui = 0)
         : TaiKhoan(stk, ctk, 0) {
         if (tienGui >= 1000000) soDu = tienGui;
         else cout << R << "So tien gui phai tu 1.000.000 VND tro len!\n" << W;
@@ -104,12 +128,10 @@ public:
     bool RutTien(double = 0) override {
         int soNgayGui = NhapSoNgay();
         if (soNgayGui == -1) { PauseIn(); return false; }
-
         double tienNhan = TinhTienNhan(soNgayGui);
         cout << "\n=> So tien rut: " << fixed << setprecision(0) << tienNhan << " VND ";
         if (soNgayGui >= 30) cout << G << "(gom ca tien lai 5%)\n" << W;
         else cout << R << "(Khong co lai: Rut truoc han)\n" << W;
-
         cout << "Xac nhan rut toan bo (y/n): ";
         char c; cin >> c; cin.ignore();
         if (c == 'y' || c == 'Y') {
@@ -123,16 +145,21 @@ public:
         return true;
     }
 
+    friend ostream& operator<<(ostream& os, const TaiKhoanTietKiem& tk) {
+        os << static_cast<const TaiKhoan&>(tk) << "\nLoai TK: Tiet kiem";
+        return os;
+    }
+
     void HienThiThongTin() const override {
-        TaiKhoan::HienThiThongTin();
-        cout << "Loai TK: Tiet kiem\n";
+        cout << *this << endl;
     }
 };
 
 //LOP TAI KHOAN THANH TOAN - KE THUA LOP TAI KHOAN
 class TaiKhoanThanhToan : public TaiKhoan {
 public:
-    TaiKhoanThanhToan(string stk = "", string ctk = "", double sodu = 0)
+    TaiKhoanThanhToan() : TaiKhoan() {}
+    TaiKhoanThanhToan(string stk, string ctk, double sodu = 0)
         : TaiKhoan(stk, ctk, sodu) {}
 
     bool RutTien(double tien) override {
@@ -150,9 +177,13 @@ public:
         return false;
     }
 
+    friend ostream& operator<<(ostream& os, const TaiKhoanThanhToan& tk) {
+        os << static_cast<const TaiKhoan&>(tk) << "\nLoai TK: Thanh toan";
+        return os;
+    }
+
     void HienThiThongTin() const override {
-        TaiKhoan::HienThiThongTin();
-        cout << "Loai TK: Thanh toan\n";
+        cout << *this << endl;
     }
 };
 
@@ -165,38 +196,32 @@ void LuuVaoFile() {
         auto tkTietKiem = dynamic_cast<TaiKhoanTietKiem*>(tk);
         if (tkTietKiem) {
             f << "TIETKIEM\n";
-            f << tk->getSoTK() << "\n" << tk->getChuTK() << "\n"
-                << tk->getSoDu() << "\n";
         }
         else {
             f << "THANHTOAN\n";
-            f << tk->getSoTK() << "\n" << tk->getChuTK() << "\n" << tk->getSoDu() << "\n";
         }
+        f << tk->getSoTK() << "\n" << tk->getChuTK() << "\n"
+            << tk->getSoDu() << "\n";
     }
     f.close();
     cout << G << "Da luu thanh cong vao " << FILE_NAME << "\n" << W;
 }
 
-//DOC FILE TaiKhoan.txt moi lan chay chuong trinh: Loai tai khoan - So tai khoan - Ten chu tai khoan - So du
+//Doc file TaiKhoan.txt khi chay chuong trinh: Loai tai khoan - So tai khoan - Ten chu tai khoan - So du
 void DocTuFile() {
     ifstream f(FILE_NAME);
     if (!f.is_open()) return;
     string line;
     while (getline(f, line)) {
+        string soTK, chuTK;
+        double soDu;
+        getline(f, soTK);
+        getline(f, chuTK);
+        f >> soDu; f.ignore();
         if (line == "TIETKIEM") {
-            string soTK, chuTK;
-            double soDu;
-            getline(f, soTK);
-            getline(f, chuTK);
-            f >> soDu; f.ignore();
             dsTaiKhoan.push_back(new TaiKhoanTietKiem(soTK, chuTK, soDu));
         }
         else if (line == "THANHTOAN") {
-            string soTK, chuTK;
-            double soDu;
-            getline(f, soTK);
-            getline(f, chuTK);
-            f >> soDu; f.ignore();
             dsTaiKhoan.push_back(new TaiKhoanThanhToan(soTK, chuTK, soDu));
         }
     }
@@ -212,10 +237,8 @@ void ThemTaiKhoan() {
     getline(cin >> ws, soTK);
     cout << "Nhap ten chu tai khoan: ";
     getline(cin, chuTK);
-
     cout << "\nChon loai tai khoan:\n1. Tiet kiem\n2. Thanh toan\nLua chon (1-2): ";
     string loai; cin >> loai;
-
     if (loai == "1") {
         double tien = NhapSoTien("\nNhap so tien gui (toi thieu 1.000.000 VND): ");
         if (tien == -1) { PauseIn(); return; }
@@ -272,7 +295,6 @@ void ThaoTacTrenTaiKhoan() {
     string soTK;
     cout << "Nhap so tai khoan: ";
     getline(cin >> ws, soTK);
-
     TaiKhoan* tk = TimTaiKhoan(soTK);
     if (!tk) {
         cout << R << "Khong tim thay tai khoan!\n" << W;
@@ -280,10 +302,8 @@ void ThaoTacTrenTaiKhoan() {
         return;
     }
     tk->HienThiThongTin();
-
     cout << "\nChon thao tac:\n1. Nap tien\n2. Rut tien\nLua chon (1-2): ";
     string chon; cin >> chon;
-
     if (chon == "1") {
         double tien = NhapSoTien("\nNhap so tien nap: ");
         if (tien == -1) { PauseIn(); return; }
@@ -328,12 +348,11 @@ int main() {
         cout << "Nhap lua chon (1-5): ";
         cin >> luaChon;
         cin.ignore();
-
         if (luaChon == "1") ThemTaiKhoan();
         else if (luaChon == "2") { HienThiTatCa(); }
         else if (luaChon == "3") ThaoTacTrenTaiKhoan();
         else if (luaChon == "4") { LuuVaoFile(); break; }
-        else if (luaChon == "5") { cout << "Thoat khong luu.\n"; break; } //THOAT CHUONG TRINH
+        else if (luaChon == "5") { cout << "Thoat khong luu.\n"; break; }
         else { cout << "Lua chon khong hop le!\n\nNhan Enter de quay lai..."; cin.get(); }
     } while (true);
 
