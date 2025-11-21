@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -73,7 +73,7 @@ public:
         }
         return false;
     }
-    virtual void XemThongTin() const {
+    virtual void HienThiThongTin() const {
         cout << "So TK: " << soTK << "\n"
             << "Chu TK: " << chuTK << "\n"
             << "So du: " << fixed << setprecision(0) << soDu << " VND\n";
@@ -123,8 +123,8 @@ public:
         return true;
     }
 
-    void XemThongTin() const override {
-        TaiKhoan::XemThongTin();
+    void HienThiThongTin() const override {
+        TaiKhoan::HienThiThongTin();
         cout << "Loai TK: Tiet kiem\n";
     }
 };
@@ -150,8 +150,8 @@ public:
         return false;
     }
 
-    void XemThongTin() const override {
-        TaiKhoan::XemThongTin();
+    void HienThiThongTin() const override {
+        TaiKhoan::HienThiThongTin();
         cout << "Loai TK: Thanh toan\n";
     }
 };
@@ -251,7 +251,7 @@ void HienThiTatCa() {
     else {
         for (size_t i = 0; i < dsTaiKhoan.size(); ++i) {
             cout << "--------------" << Y << " Tai khoan " << i + 1 << W << " --------------\n";
-            dsTaiKhoan[i]->XemThongTin();
+            dsTaiKhoan[i]->HienThiThongTin();
             cout << "-----------------------------------------\n\n";
         }
     }
@@ -279,7 +279,7 @@ void ThaoTacTrenTaiKhoan() {
         PauseIn();
         return;
     }
-    tk->XemThongTin();
+    tk->HienThiThongTin();
 
     cout << "\nChon thao tac:\n1. Nap tien\n2. Rut tien\nLua chon (1-2): ";
     string chon; cin >> chon;
