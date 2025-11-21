@@ -1,0 +1,12 @@
+TIETKIEM
+0001
+Ngan Vu
+2.3e+07
+THANHTOAN
+0002
+Tran Thanh Tu
+1.4e+07
+TIETKIEM
+123456789
+Nguyen Teo
+1e+09
