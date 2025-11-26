@@ -91,7 +91,7 @@ public:
         return is;
     }
 
-    friend ostream& operator<<(ostream& os, const TaiKhoan& tk) {
+    friend ostream& operator<<(ostream& os, TaiKhoan tk) {
         os << "So TK: " << tk.soTK << "\n"
             << "Chu TK: " << tk.chuTK << "\n"
             << "So du: " << fixed << setprecision(0) << tk.soDu << " VND\n";
@@ -143,8 +143,8 @@ public:
         return true;
     }
 
-    friend ostream& operator<<(ostream& os, const TaiKhoanTietKiem& tk) {
-        os << static_cast<const TaiKhoan&>(tk) << "\nLoai TK: Tiet kiem";
+    friend ostream& operator<<(ostream& os, TaiKhoanTietKiem tk) {
+        os << static_cast<TaiKhoan>(tk) << "Loai TK: Tiet kiem";
         return os;
     }
 
@@ -175,8 +175,8 @@ public:
         return false;
     }
 
-    friend ostream& operator<<(ostream& os, const TaiKhoanThanhToan& tk) {
-        os << static_cast<const TaiKhoan&>(tk) << "\nLoai TK: Thanh toan";
+    friend ostream& operator<<(ostream& os, TaiKhoanThanhToan tk) {
+        os << static_cast<TaiKhoan>(tk) << "Loai TK: Thanh toan";
         return os;
     }
 
